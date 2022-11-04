@@ -40,15 +40,68 @@ function* createFavorite(action) {
     }
 }
 
+function* fetchFavorites() {
+    try {
+        const response = yield axios.get('/api/favorite');
+        
+        yield put({
+            type: 'SET_GIF_LIST',
+            payload: response.data
+        });
+    }
+    catch (err) {
+        console.error('fetchFavorites err', err);
+    }
+}
+
+function* fetchCategories() {
+    try {
+        const response = yield axios.get('/api/category');
+
+        yield put({
+            type: 'SET_CATEGORY_LIST',
+            payload: response.data
+        });
+    }
+    catch (err) {
+        console.error('fetchFavorites err', err);
+    }
+}
+
+function* setCategory(action) {
+    try {
+        yield axios.put(`/api/favorite/${action.payload.favoriteId}`, {
+            categoryId: action.payload.categoryId
+        });
+    }
+    catch (err) {
+        console.error('setCategory err', err);
+    }
+}
+
 // watcher sagas will watch for actions. If they match, they fire off other sagas.
 function* watcherSaga() {
     yield takeEvery('SEARCH_FOR_GIFS', searchForGifs)
     yield takeEvery('CREATE_FAVORITE', createFavorite);
+    yield takeEvery('FETCH_FAVORITES', fetchFavorites);
+    yield takeEvery('FETCH_CATEGORIES', fetchCategories);
+    yield takeEvery('SET_CATEGORY', setCategory);
 }
 
 const gifList = (state = [], action) => {
     switch (action.type) {
         case 'SET_GIF_LIST':
+            return action.payload;
+        case 'CLEAR_GIF_LIST':
+            return [];
+    }
+
+    return state;
+}
+
+const categoryList = (state = [], action) => {
+    switch (action.type) {
+        case 'SET_CATEGORY_LIST':
             return action.payload;
     }
 
@@ -59,6 +112,7 @@ const gifList = (state = [], action) => {
 const storeInstance = createStore(
     combineReducers({
         gifList,
+        categoryList
     }),
     applyMiddleware(sagaMiddleware, logger),
 );

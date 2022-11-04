@@ -1,11 +1,18 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import GifItem from '../GifItem/GifItem';
+import { useEffect } from 'react';
 
 function Search() {
     const dispatch = useDispatch();
     const [searchInput, setSearchInput] = useState('');
     const gifList = useSelector(store => store.gifList);
+
+    useEffect(() => {
+        dispatch({
+            type: 'CLEAR_GIF_LIST'
+        }); 
+    }, []);
 
     const onSearch = (evt) => {
         evt.preventDefault();

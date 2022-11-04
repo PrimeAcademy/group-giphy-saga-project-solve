@@ -12,7 +12,7 @@ CREATE TABLE "favorite" (
 CREATE TABLE "favorite_category" (
     "id" SERIAL PRIMARY KEY,
     "favorite_id" INT REFERENCES "favorite",
-    "categeory_id" INT REFERENCES "category"
+    "category_id" INT REFERENCES "category"
 );
 
 -- Default categories. You may change them :)
