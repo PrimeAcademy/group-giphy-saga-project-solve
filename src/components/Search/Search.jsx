@@ -12,11 +12,15 @@ function Search() {
         dispatch({
             type: 'CLEAR_GIF_LIST'
         }); 
+
+        // axios.get no - use a saga
     }, []);
 
     const onSearch = (evt) => {
         evt.preventDefault();
 
+        // starting the process to find gifs
+        // this object IS the action on the saga function
         dispatch({
             type: 'SEARCH_FOR_GIFS',
             payload: searchInput

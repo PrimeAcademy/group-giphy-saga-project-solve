@@ -13,16 +13,15 @@ const sagaMiddleware = createSagaMiddleware();
 
 function* searchForGifs(action) {
     try {
-        const response = yield axios.get(`/api/search`, {
-            params: {
-                query: action.payload
-            }
-        });
-        console.log('search response', response.data);
+        // yield will pause and wait for a response from our server
+        const response = yield axios.get(`/api/search/${action.payload}`);
 
+        console.log('search response', response.data);
+        
+        // purpose: store the data in a reducer
         // aka "dispatch"
         yield put({
-            type: 'SET_GIF_LIST',
+            type: 'SET_GIF_LIST', // determines where to find it (saga or reducer)
             payload: response.data
         });
     }
@@ -34,6 +33,10 @@ function* searchForGifs(action) {
 function* createFavorite(action) {
     try {
         yield axios.post('/api/favorite', action.payload);
+
+        yield put({
+            type: 'GET_STUFF', // call the GET axios function again
+        })
     }
     catch (err) {
         console.error('createFavorite error', err);
@@ -69,8 +72,12 @@ function* fetchCategories() {
 }
 
 function* setCategory(action) {
+    // in order to set a category for a favorite, we need
+    // 1. Favorite id - sent on the URL
+    // 2. Category id - sent on the BODY (data)
     try {
         yield axios.put(`/api/favorite/${action.payload.favoriteId}`, {
+            // data object with category id
             categoryId: action.payload.categoryId
         });
     }
@@ -86,8 +93,12 @@ function* watcherSaga() {
     yield takeEvery('FETCH_FAVORITES', fetchFavorites);
     yield takeEvery('FETCH_CATEGORIES', fetchCategories);
     yield takeEvery('SET_CATEGORY', setCategory);
+
+    // TODO fetch 1 single favorite and categories
+
 }
 
+// REDUCERS
 const gifList = (state = [], action) => {
     switch (action.type) {
         case 'SET_GIF_LIST':

@@ -11,6 +11,7 @@ function App() {
           -
           <Link to="/favorites">Favorites</Link>
         </nav>
+        
         <Route path="/" exact>
           <Search />
         </Route>
